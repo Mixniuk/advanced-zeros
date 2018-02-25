@@ -1,5 +1,4 @@
 module.exports = function getZerosCount(number, base) {
-    
     function GetSimpleArr(){
         a = [];
         for(i = 1;i <= base;i++){
@@ -27,25 +26,51 @@ module.exports = function getZerosCount(number, base) {
         return simpleArr;
     }
     
-    function getSimple(simpleArr){
-        k = 0;
-        i = simpleArr.length-1;
+    function findSimpleInd(i){
         while(base%simpleArr[i] != 0){
             i--;
         }
-        while(base%simpleArr[i] == 0){
-            base/=simpleArr[i];
-            k++;
-        }
-        return [simpleArr[i],k];
-    } 
-    
-    simple = getSimple(GetSimpleArr());
-    counter = 0;
-    while(number > 1){
-        number = Math.floor(number/simple[0]);
-        counter+=number;
+        return i;
     }
     
-    return Math.floor(counter/simple[1]); 
+    function findCountSimple(simple){
+        base1 = base;
+        k = 0;
+        while(base1%simple == 0){
+            base1/=simple;
+            k++;
+        }
+        return [simple,k];
+    }
+    
+    function getSimple(simpleArr){
+        l = 0;
+        s = [];
+        i = findSimpleInd(simpleArr.length-1);
+        while (i > 0){
+            s[l] = findCountSimple(simpleArr[i]);
+            i = findSimpleInd(--i);
+            l++;
+        }
+        return s;
+    } 
+    
+    function findZeros(simple,num){
+        counter = 0;
+        while(num > 1){
+            num = Math.floor(num/simple[0]);
+            counter+=num;
+        }
+        return Math.floor(counter/simple[1]);
+    }
+    
+    simple = getSimple(GetSimpleArr());
+    min = 0;
+    zeros = [];
+    for(i = 0;i < simple.length;i++){
+        zeros[i] = findZeros(simple[i],number);
+        if(zeros[min] > zeros[i]) min = i;
+    };
+    
+    return zeros[min]; 
 }
